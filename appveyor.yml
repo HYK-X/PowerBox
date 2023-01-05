@@ -1,0 +1,70 @@
+image:
+- Visual Studio 2019
+- macOS
+- Ubuntu
+
+skip_branch_with_pr: true
+stack: python 3.9
+
+environment:
+  GITHUB_TOKEN:
+    secure: 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
+
+install:
+- pip install -r requirements.txt
+
+build_script:
+- flet pack main.py --add-data "assets;assets"  --noconsole --onefile --icon icon.png --name PowerBox
+
+test: off
+
+# Publish artifacts to GitHub Releases on "tag" builds
+deploy:
+  provider: GitHub
+  auth_token: $(GITHUB_TOKEN)
+  on:
+    APPVEYOR_REPO_TAG: true
+
+#
+#   Windows package
+# 
+for:
+-
+  matrix:
+    only:
+    - image: Visual Studio 2019
+
+  after_build:
+  - 7z a counter-windows.zip %CD%\dist\*.exe
+
+  artifacts:
+  - path: counter-windows.zip
+
+#
+#   macOS package
+# 
+-
+  matrix:
+    only:
+    - image: macOS
+
+  after_build:
+  - tar -czvf counter-macos.tar.gz -C dist counter.app
+
+  artifacts:
+  - path: counter-macos.tar.gz
+
+#
+#   Linux package
+# 
+-
+  matrix:
+    only:
+    - image: Ubuntu
+
+  after_build:
+  - tar -czvf counter-linux.tar.gz -C dist counter
+
+  artifacts:
+  - path: counter-linux.tar.gz
+
