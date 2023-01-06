@@ -194,6 +194,7 @@ def Homepage(page: ft.Page):
                 page.update()
                 try:
                     webdav.exists("./powerbox/check")
+                    download(None)
                 except:
                     webdav.mkdir("./powerbox/")
                     f = open("./data/check", mode="w")
